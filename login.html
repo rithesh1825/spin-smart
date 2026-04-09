@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — SpinSmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #070911; --surface: #0f1117; --card: #1a1d2e; --accent: #00d4aa; --accent2: #3a7bd5; --text: #e8eaf0; --muted: #6b7280; --border: #252840; }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        body::before { content:''; position:fixed; inset:0; background-image: linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px); background-size:40px 40px; pointer-events:none; }
+        .auth-wrap { width: 100%; max-width: 420px; padding: 20px; position: relative; z-index: 1; }
+        .brand { text-align: center; margin-bottom: 32px; }
+        .brand .logo { font-family: 'Space Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+        .brand .logo span { color: var(--text); }
+        .brand p { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+        .auth-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px; }
+        .auth-card h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 6px; }
+        .auth-card .sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 28px; }
+        .form-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; }
+        .form-control { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 14px; font-size: 0.875rem; }
+        .form-control:focus { background: var(--surface); border-color: var(--accent); color: var(--text); box-shadow: 0 0 0 3px rgba(0,212,170,0.1); }
+        .form-control::placeholder { color: var(--muted); }
+        .input-group-text { background: var(--surface); border: 1px solid var(--border); color: var(--muted); border-radius: 8px 0 0 8px; }
+        .btn-submit { width:100%; background: var(--accent); border: none; color: #000; font-weight: 700; font-size: 0.9rem; border-radius: 8px; padding: 12px; margin-top: 8px; transition: all 0.2s; }
+        .btn-submit:hover { background: #00b899; color: #000; box-shadow: 0 6px 20px rgba(0,212,170,0.3); }
+        .alert { border-radius: 8px; font-size: 0.82rem; border: none; }
+        .alert-danger { background: rgba(231,76,60,0.1); color: #f08080; }
+        .alert-success { background: rgba(0,212,170,0.1); color: var(--accent); }
+        .foot-link { text-align:center; margin-top:20px; font-size:0.8rem; color:var(--muted); }
+        .foot-link a { color: var(--accent); text-decoration: none; }
+        .demo-box { background: rgba(58,123,213,0.06); border: 1px solid rgba(58,123,213,0.2); border-radius: 8px; padding: 10px 14px; margin-top: 16px; font-size: 0.75rem; color: #6fa3f7; }
+        .demo-box strong { display: block; margin-bottom: 2px; }
+        .divider { display:flex; align-items:center; gap:10px; margin:20px 0; color:var(--muted); font-size:0.75rem; }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    </style>
+</head>
+<body>
+<div class="auth-wrap">
+    <div class="brand">
+        <div class="logo">🚲 Spin<span>Smart</span></div>
+        <p>Utilization-Aware Trip Advisor</p>
+    </div>
+    <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in to your account to continue</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }} mb-3">{{ msg }}</div>
+        {% endfor %}{% endif %}
+        {% endwith %}
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn-submit"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
+        </form>
+        <div class="demo-box">
+            <strong><i class="fas fa-info-circle me-1"></i> Demo credentials</strong>
+            Admin: <code>admin</code> / <code>admin123</code>
+        </div>
+    </div>
+    <div class="foot-link">
+        Don't have an account? <a href="/register">Create one</a>
+        &nbsp;·&nbsp; <a href="/">← Home</a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

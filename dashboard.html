@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-bicycle"></i></div>
+            <div>
+                <div class="stat-value">{{ total_bikes }}</div>
+                <div class="stat-label">Total Bikes</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-map-marker-alt"></i></div>
+            <div>
+                <div class="stat-value">{{ stations|length }}</div>
+                <div class="stat-label">Active Stations</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fas fa-route"></i></div>
+            <div>
+                <div class="stat-value">{{ active_rides }}</div>
+                <div class="stat-label">Active Rides</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="stat-value">{{ success_rate }}%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Station Overview -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-map-marked-alt me-2" style="color:var(--accent)"></i>Station Overview</span>
+                <a href="{{ url_for('stations') }}" style="font-size:0.75rem;color:var(--accent);text-decoration:none;">View all →</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Station</th>
+                            <th>Capacity</th>
+                            <th>Available Bikes</th>
+                            <th>Availability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for s in stations %}
+                    <tr>
+                        <td>
+                            {% if s.available_bikes > 3 %}
+                            <span class="avail-dot" style="background:var(--accent)"></span>
+                            {% elif s.available_bikes > 0 %}
+                            <span class="avail-dot" style="background:var(--warn)"></span>
+                            {% else %}
+                            <span class="avail-dot" style="background:var(--danger)"></span>
+                            {% endif %}
+                            {{ s.name }}
+                        </td>
+                        <td style="color:var(--muted)">{{ s.capacity }}</td>
+                        <td>
+                            <span class="badge-pill {% if s.available_bikes > 3 %}badge-green{% elif s.available_bikes > 0 %}badge-orange{% else %}badge-red{% endif %}">
+                                {{ s.available_bikes }} bikes
+                            </span>
+                        </td>
+                        <td style="width:140px">
+                            {% set pct = ((s.available_bikes / s.capacity) * 100)|int if s.capacity else 0 %}
+                            <div class="progress" style="height:5px;">
+                                <div class="progress-bar" style="width:{{ pct }}%;background:{% if pct > 50 %}var(--accent){% elif pct > 20 %}var(--warn){% else %}var(--danger){% endif %}"></div>
+                            </div>
+                            <small style="color:var(--muted);font-size:0.7rem;">{{ pct }}%</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions + Recent Rides -->
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-header"><i class="fas fa-bolt me-2" style="color:var(--accent)"></i>Quick Actions</div>
+            <div class="card-body d-flex flex-column gap-2">
+                <a href="{{ url_for('trip_advisor') }}" class="btn btn-primary w-100 text-start">
+                    <i class="fas fa-route me-2"></i>Get Trip Recommendation
+                </a>
+                <a href="{{ url_for('checkout') }}" class="btn btn-outline-secondary w-100 text-start">
+                    <i class="fas fa-sign-out-alt me-2"></i>Checkout a Bike
+                </a>
+                <a href="{{ url_for('checkin') }}" class="btn btn-outline-secondary w-100 text-start">
+                    <i class="fas fa-sign-in-alt me-2"></i>Return a Bike
+                </a>
+                <a href="{{ url_for('stations') }}" class="btn btn-outline-secondary w-100 text-start">
+                    <i class="fas fa-search me-2"></i>Search Stations
+                </a>
+                <button onclick="getBestStation()" class="btn btn-success w-100 text-start">
+                    <i class="fas fa-star me-2"></i>Recommend Best Station
+                </button>
+                {% if session.role == 'admin' %}
+                <hr style="border-color:var(--border);margin:4px 0">
+                <a href="{{ url_for('analytics') }}" class="btn btn-outline-secondary w-100 text-start">
+                    <i class="fas fa-chart-bar me-2"></i>View Analytics
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Rides -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-history me-2" style="color:var(--accent2)"></i>Recent Rides</div>
+            <div class="card-body p-0">
+                {% if recent_rides %}
+                {% for ride in recent_rides %}
+                <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.8rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+                        <span style="font-weight:500;color:var(--text);">{{ ride.username }}</span>
+                        <span class="badge-pill {% if ride.success %}badge-green{% else %}badge-red{% endif %}">
+                            {% if ride.success %}✓ Success{% else %}✗ Failed{% endif %}
+                        </span>
+                    </div>
+                    <span style="color:var(--muted);">{{ ride.source_name }} → {{ ride.dest_name or '...' }}</span>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="padding:20px;text-align:center;color:var(--muted);font-size:0.82rem;">No rides yet</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+async function getBestStation(){
+    const res = await fetch("/best_station");
+    const data = await res.json();
+
+    alert(
+        "Best Station: " + data.best_station +
+        "\nAvailable Bikes: " + data.available_bikes +
+        "\nReason: " + data.reason
+    );
+}
+</script>
+{% endblock %}

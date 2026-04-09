@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Users{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-users me-2" style="color:var(--accent)"></i>Registered Customers</span>
+        <span class="badge-pill badge-blue">{{ users|length }} users</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Helmet</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
+            <tr>
+                <td style="color:var(--muted)">{{ loop.index }}</td>
+                <td>
+                    <span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#000;margin-right:8px;">{{ u.username[0].upper() }}</span>
+                    {{ u.username }}
+                </td>
+                <td style="color:var(--muted);font-size:0.82rem;">{{ u.email or '—' }}</td>
+                <td style="color:var(--muted);font-size:0.82rem;">{{ u.contact or '—' }}</td>
+                <td>
+                    {% if u.helmet == 'yes' %}
+                    <span class="badge-pill badge-green">Yes</span>
+                    {% else %}
+                    <span class="badge-pill badge-red">No</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:0.78rem;color:var(--muted);">{{ u.created_at[:10] if u.created_at else '—' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">No users registered yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

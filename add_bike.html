@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Add Bike{% endblock %}
+{% block page_title %}Register Bike{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-lg-5">
+<div class="card">
+    <div class="card-header"><i class="fas fa-bicycle me-2" style="color:var(--accent)"></i>Register New Bike</div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label">Bike No. *</label>
+                    <input type="text" name="bike_no" class="form-control" placeholder="e.g. TS12388" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Model *</label>
+                    <input type="text" name="model" class="form-control" placeholder="e.g. Hero Splendor" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Year *</label>
+                    <input type="text" name="year" class="form-control" placeholder="e.g. 2022" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Assign to Station *</label>
+                    <select name="station_id" class="form-select" required>
+                        <option value="">— Select —</option>
+                        {% for s in stations %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <input type="text" name="description" class="form-control" placeholder="Brief description">
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary flex-fill"><i class="fas fa-plus me-2"></i>Register Bike</button>
+                <a href="{{ url_for('bikes') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

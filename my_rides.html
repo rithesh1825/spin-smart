@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}My Rides{% endblock %}
+{% block page_title %}My Rides{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-history me-2" style="color:var(--accent)"></i>Ride History</span>
+        <span style="font-size:0.75rem;color:var(--muted);">{{ rides|length }} total rides</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Bike</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Checkout Time</th>
+                    <th>Return Time</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in rides %}
+            <tr>
+                <td>
+                    <span style="font-family:'Space Mono',monospace;font-size:0.82rem;color:var(--accent);">{{ r.bike_no }}</span>
+                    <br><small style="color:var(--muted)">{{ r.model }}</small>
+                </td>
+                <td>{{ r.source_name }}</td>
+                <td>{{ r.dest_name or '—' }}</td>
+                <td style="font-size:0.78rem;color:var(--muted);">{{ r.checkout_time[:16] if r.checkout_time else '—' }}</td>
+                <td style="font-size:0.78rem;color:var(--muted);">{{ r.checkin_time[:16] if r.checkin_time else '—' }}</td>
+                <td>
+                    {% if r.status == 'active' %}
+                    <span class="badge-pill badge-orange">Active</span>
+                    {% else %}
+                    <span class="badge-pill badge-blue">Completed</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if r.status == 'active' %}
+                    <span style="color:var(--muted);font-size:0.8rem;">In progress</span>
+                    {% elif r.success %}
+                    <span class="badge-pill badge-green">✓ Success</span>
+                    {% else %}
+                    <span class="badge-pill badge-red">✗ Failed</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if r.status == 'active' %}
+                    <a href="{{ url_for('cancel_ride', ride_id=r.id) }}"
+                    class="btn btn-danger btn-sm">
+                    Cancel
+                    </a>
+                    {% else %}
+                    <span style="color:var(--muted);font-size:0.75rem;">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align:center;padding:50px;color:var(--muted);">
+                    <i class="fas fa-route fa-2x mb-3 d-block"></i>
+                    No rides yet. <a href="{{ url_for('checkout') }}" style="color:var(--accent)">Checkout your first bike!</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

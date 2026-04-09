@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Bikes{% endblock %}
+{% block page_title %}Bike Fleet{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p style="color:var(--muted);font-size:0.85rem;margin:0;">{{ bikes|length }} bikes registered in the system</p>
+    {% if session.role == 'admin' %}
+    <a href="{{ url_for('add_bike') }}" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Register Bike</a>
+    {% endif %}
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Bike No.</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Station</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for b in bikes %}
+            <tr>
+                <td><span style="font-family:'Space Mono',monospace;font-size:0.85rem;color:var(--accent);">{{ b.bike_no }}</span></td>
+                <td style="font-weight:500;">{{ b.model }}</td>
+                <td style="color:var(--muted);">{{ b.year }}</td>
+                <td>
+                    {% if b.station_name %}
+                    <span class="badge-pill badge-blue"><i class="fas fa-map-marker-alt me-1"></i>{{ b.station_name }}</span>
+                    {% else %}
+                    <span style="color:var(--muted);">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if b.status == 'available' %}
+                    <span class="badge-pill badge-green">Available</span>
+                    {% elif b.status == 'rented' %}
+                    <span class="badge-pill badge-orange">Rented</span>
+                    {% else %}
+                    <span class="badge-pill badge-red">{{ b.status }}</span>
+                    {% endif %}
+                </td>
+                <td style="color:var(--muted);font-size:0.8rem;">{{ b.description }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align:center;color:var(--muted);padding:40px;">
+                    <i class="fas fa-bicycle fa-2x mb-2 d-block"></i>No bikes registered yet.
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

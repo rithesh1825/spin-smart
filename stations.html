@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Stations{% endblock %}
+{% block page_title %}Base Stations{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <form class="d-flex gap-2" method="GET">
+        <input type="text" name="q" class="form-control" placeholder="Search by station or location..." value="{{ query }}" style="width:280px;">
+        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-search me-1"></i>Search</button>
+        {% if query %}<a href="{{ url_for('stations') }}" class="btn btn-outline-secondary">Clear</a>{% endif %}
+    </form>
+    {% if session.role == 'admin' %}
+    <a href="{{ url_for('add_station') }}" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add Station</a>
+    {% endif %}
+</div>
+
+<div class="row g-3">
+{% for s in stations %}
+<div class="col-md-6 col-xl-4">
+    <div class="station-card">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="station-name">{{ s.name }}</div>
+            {% set pct = ((s.available_bikes / s.capacity) * 100)|int if s.capacity else 0 %}
+            {% if pct > 50 %}
+            <span class="badge-pill badge-green">High</span>
+            {% elif pct > 20 %}
+            <span class="badge-pill badge-orange">Medium</span>
+            {% else %}
+            <span class="badge-pill badge-red">Low</span>
+            {% endif %}
+        </div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:14px;">
+            <i class="fas fa-map-marker-alt me-1"></i>{{ s.locations }}
+        </div>
+
+        <div class="row g-2 mb-3" style="font-size:0.8rem;">
+            <div class="col-4 text-center" style="background:rgba(255,255,255,0.03);border-radius:6px;padding:8px 4px;">
+                <div style="font-family:'Space Mono',monospace;font-weight:700;color:var(--accent);">{{ s.available_bikes }}</div>
+                <div style="color:var(--muted);font-size:0.68rem;">Bikes</div>
+            </div>
+            <div class="col-4 text-center" style="background:rgba(255,255,255,0.03);border-radius:6px;padding:8px 4px;">
+                <div style="font-family:'Space Mono',monospace;font-weight:700;color:var(--accent2);">{{ s.available_slots }}</div>
+                <div style="color:var(--muted);font-size:0.68rem;">Slots</div>
+            </div>
+            <div class="col-4 text-center" style="background:rgba(255,255,255,0.03);border-radius:6px;padding:8px 4px;">
+                <div style="font-family:'Space Mono',monospace;font-weight:700;color:var(--text);">{{ s.capacity }}</div>
+                <div style="color:var(--muted);font-size:0.68rem;">Capacity</div>
+            </div>
+        </div>
+
+        <div class="mb-1" style="font-size:0.7rem;color:var(--muted);display:flex;justify-content:space-between;">
+            <span>Bike Availability</span><span>{{ pct }}%</span>
+        </div>
+        <div class="progress mb-2">
+            <div class="progress-bar" style="width:{{ pct }}%;background:{% if pct > 50 %}var(--accent){% elif pct > 20 %}var(--warn){% else %}var(--danger){% endif %}"></div>
+        </div>
+        <div style="font-size:0.72rem;margin-top:6px;display:flex;justify-content:space-between;">
+    <span>
+        Demand:
+        <b style="
+            color:
+            {% if s.demand == 'High' %}#ff6b6b
+            {% elif s.demand == 'Moderate' %}#f7b731
+            {% else %}#26de81
+            {% endif %}
+        ">
+        {{ s.demand }}
+        </b>
+    </span>
+    <span>Peak: {{ s.peak_hour }}</span>
+</div>
+    </div>
+    
+</div>
+{% else %}
+<div class="col-12">
+    <div class="card"><div class="card-body text-center py-5" style="color:var(--muted);">
+        <i class="fas fa-map-marked-alt fa-2x mb-3"></i>
+        <p>No stations found{% if query %} for "{{ query }}"{% endif %}.</p>
+    </div></div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

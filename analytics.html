@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Analytics & Reports{% endblock %}
+
+{% block content %}
+<!-- Summary stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-route"></i></div>
+            <div><div class="stat-value">{{ total_rides }}</div><div class="stat-label">Total Rides</div></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-check-double"></i></div>
+            <div><div class="stat-value">{{ success_pct }}%</div><div class="stat-label">Success Rate</div></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fas fa-users"></i></div>
+            <div><div class="stat-value">{{ freq_users|length }}</div><div class="stat-label">Active Users</div></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+            <div><div class="stat-value">0.826</div><div class="stat-label">Model Precision</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts row 1 -->
+<div class="row g-3 mb-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-chart-bar me-2" style="color:var(--accent)"></i>Ride Frequency by Station</div>
+            <div class="card-body chart-container">
+                <img src="data:image/png;base64,{{ chart1 }}" alt="Ride Frequency">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-chart-pie me-2" style="color:var(--accent2)"></i>Success Rate</div>
+            <div class="card-body chart-container">
+                <img src="data:image/png;base64,{{ chart2 }}" alt="Success Rate">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart 3 full width -->
+<div class="row g-3 mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-balance-scale me-2" style="color:var(--warn)"></i>Station Capacity vs Available Bikes</div>
+            <div class="card-body chart-container">
+                <img src="data:image/png;base64,{{ chart3 }}" alt="Capacity Chart">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tables row -->
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-star me-2" style="color:var(--accent)"></i>Frequent Users</div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead><tr><th>#</th><th>Username</th><th>Rides</th></tr></thead>
+                    <tbody>
+                    {% for u in freq_users %}
+                    <tr>
+                        <td style="color:var(--muted);">{{ loop.index }}</td>
+                        <td>
+                            <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#000;margin-right:8px;">{{ u.username[0].upper() }}</span>
+                            {{ u.username }}
+                        </td>
+                        <td><span class="badge-pill badge-green">{{ u.cnt }} rides</span></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3" style="text-align:center;color:var(--muted);">No data yet</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-exchange-alt me-2" style="color:var(--accent2)"></i>Bike History (Station Pairs)</div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead><tr><th>Bike</th><th>Source</th><th>Destination</th><th>Count</th></tr></thead>
+                    <tbody>
+                    {% for h in bike_history %}
+                    <tr>
+                        <td><span style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent);">{{ h.bike_no }}</span><br><small style="color:var(--muted)">{{ h.model }}</small></td>
+                        <td>{{ h.source }}</td>
+                        <td>{{ h.dest }}</td>
+                        <td><span class="badge-pill badge-blue">{{ h.cnt }}x</span></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align:center;color:var(--muted);">No ride history yet</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
